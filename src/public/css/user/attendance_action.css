@@ -1,0 +1,86 @@
+.attendance {
+  padding: 2rem;
+  font-family: 'Arial', sans-serif;
+}
+
+/* 勤怠ステータス表示 */
+.attendance__status {
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.attendance__label {
+  font-size: 1rem;
+}
+
+.attendance__status-badge {
+  padding: 0.5rem 1rem;
+  margin: 0 auto;
+  background-color: #C8C8C8;
+  color: #696969;
+  border-radius: 25px;
+  font-weight: bold;
+  display: inline-block;
+  letter-spacing: 0.1em;
+}
+
+/* 日付と時刻表示 */
+.attendance__datetime {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.attendance__date {
+  font-size: 1.2rem;
+}
+
+.attendance__time {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
+/* 勤怠ボタン */
+.attendance__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.attendance__button {
+  padding: 0.75rem 2rem;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.attendance__buttons-row {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.attendance__button--rest,
+.attendance__button--resume {
+  background-color: #fff;
+  color: #000;}
+
+.attendance__button:hover {
+  background-color: #888;
+}
+
+/* お疲れさまメッセージ */
+.attendance__message {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000;
+  margin-top: 2rem;
+}

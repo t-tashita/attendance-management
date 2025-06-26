@@ -1,0 +1,92 @@
+
+.attendance-index__title {
+  font-weight: bold;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.attendance-index__month-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-radius: 6px;
+  background-color: #fff;
+}
+
+.attendance-index__month-button {
+  background: none;
+  border: none;
+  color: #737373;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.attendance-index__month {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.attendance-index__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  background-color: #fff;
+  overflow-x: auto;
+  border-radius: 6px;
+}
+
+.attendance-index__th {
+  text-align: left;
+  padding: 0.8rem;
+  color: #737373;
+  border-bottom: 2px solid #ccc;
+}
+
+.attendance-index__td {
+  padding: 0.8rem;
+  color: #737373;
+  border-bottom: 1px solid #ccc;
+}
+
+.attendance-index__link {
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.attendance-index__btn-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
+}
+
+.attendance-index__submit-btn {
+  background-color: #000;
+  color: #fff;
+  padding: 5px 25px;
+  margin: 25px 0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.attendance-index__submit-btn:hover:not(:disabled) {
+  background-color: #333;
+}
+
+.attendance-index__submit-btn:disabled {
+  background-color: #777;
+  cursor: not-allowed;
+}

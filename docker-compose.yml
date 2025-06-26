@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   nginx:
     image: nginx:1.21.1
@@ -15,6 +13,7 @@ services:
     build: ./docker/php
     volumes:
       - ./src:/var/www/
+    user: "1000:1000"
 
   mysql:
     image: mysql:8.0.26

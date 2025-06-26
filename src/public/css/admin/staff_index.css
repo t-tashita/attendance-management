@@ -1,0 +1,38 @@
+.staff-index {
+  display: flex;
+  flex-direction: column;
+}
+
+.staff-index__title {
+  font-weight: bold;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.staff-index__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  background-color: #fff;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.staff-index__th {
+  padding: 0.8rem;
+  color: #737373;
+  border-bottom: 2px solid #ccc;
+}
+
+.staff-index__td {
+  padding: 0.8rem;
+  color: #737373;
+  border-bottom: 1px solid #ccc;
+}
+
+.staff-index__link {
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: none;
+}

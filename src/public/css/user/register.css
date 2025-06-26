@@ -1,0 +1,72 @@
+.main {
+  background-color: #fff;
+}
+
+.register__title {
+  text-align: center;
+  font-weight: bold;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.register__form-group {
+  width: 80%;
+  margin: 2rem auto 0;
+}
+
+.register__label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.register__input {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 1.5rem;
+  border: 1px solid #000;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.register__error {
+  color: #ff0000;
+}
+
+.register__button {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  margin-top: 4rem;
+  font-weight: bold;
+  font-size: 1.75rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #000;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.register__button:hover {
+  background-color: #888;
+}
+
+.register__link {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.register__link-anchor {
+  font-size: 1.5rem;
+  color: #007bff;
+  padding: 0.2rem 0.5rem;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.register__link-anchor:hover {
+  color: #0000ff;
+}
