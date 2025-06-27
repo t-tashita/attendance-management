@@ -5,6 +5,7 @@ init:
 	docker-compose exec php php artisan key:generate
 	docker-compose exec php php artisan storage:link
 	docker-compose exec php chmod -R 777 storage bootstrap/cache
+	@make wait-db
 	@make fresh
 
 fresh:
@@ -25,3 +26,11 @@ cache:
 	docker-compose exec php php artisan config:cache
 stop:
 	docker-compose stop
+
+wait-db:
+	@echo "🔄 Waiting for MySQL to be ready..."
+	@until docker-compose exec php bash -c "nc -z mysql 3306"; do \
+		sleep 1; \
+		echo '⏳ Waiting for mysql:3306...'; \
+	done
+	@echo "✅ MySQL is ready!"
