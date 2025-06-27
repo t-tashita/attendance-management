@@ -2,7 +2,7 @@
 
 ## 環境構築  
 
-1.
+1.GitHub からクローンする
 ```
 git clone git@github.com:t-tashita/flea-market
 ```  
