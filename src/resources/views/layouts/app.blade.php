@@ -13,7 +13,7 @@
         <div class="header__inner">
             <div class="header__logo">
                 <a href="{{ url('/attendance') }}">
-                    <img src="{{ asset('storage/images/logo.svg') }}" alt="ロゴ" class="header__logo-image">
+                    <img src="{{ asset('img/logo.svg') }}" alt="ロゴ" class="header__logo-image">
                 </a>
             </div>
             <nav class="header__nav">
