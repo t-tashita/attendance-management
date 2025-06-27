@@ -17,7 +17,7 @@ make init
 # メール認証  
 
 mailtrapというツールを使用しています。  
-以下のリンクから会員登録をしてください。  　
+以下のリンクから会員登録をしてください。  
 https://mailtrap.io/  
 
 メールボックスのIntegrationsから 「laravel 7.x and 8.x」を選択し、  
@@ -44,24 +44,8 @@ password: password
 
 # PHPUnitを利用したテストに関して  
 以下のコマンド:  
-
-//テスト用データベースの作成  
-```
-docker-compose exec mysql bash  
-```
-```
-mysql -u root -p  
-```
-//パスワードはrootと入力  
-```
-create database test_db;  
-```
 ```
 docker-compose exec php bash  
-```
-```
 php artisan migrate:fresh --env=testing  
-```
-```
 ./vendor/bin/phpunit  
 ```
