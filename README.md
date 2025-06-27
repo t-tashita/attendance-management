@@ -4,7 +4,7 @@
 
 1.GitHub からクローンする
 ```
-git clone git@github.com:t-tashita/flea-market
+git clone git@github.com:t-tashita/attendance-management
 ```  
 
 2.DockerDesktopアプリを立ち上げる  
