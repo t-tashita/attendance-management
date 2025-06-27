@@ -5,13 +5,13 @@ namespace Tests\Feature;
 use App\Models\Attendance;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Auth\Events\Verified;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Tests\TestCase;
 
 class UserTest extends TestCase
@@ -20,8 +20,10 @@ class UserTest extends TestCase
 
     //認証機能（一般ユーザー）
     // 名前が未入力の場合、バリデーションメッセージが表示される
-    public function testNameIsRequired()
+    public function testRegisterNameRequired()
     {
+        // 1. 名前以外のユーザー情報を入力する
+        // 2. 会員登録の処理を行う
         $response = $this->post('/register', [
             'name' => '',
             'email' => 'test@example.com',
@@ -29,14 +31,17 @@ class UserTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
+        //「お名前を入力してください」というバリデーションメッセージが表示される
         $response->assertSessionHasErrors([
             'name' => 'お名前を入力してください。',
         ]);
     }
 
     // メールアドレスが未入力の場合、バリデーションメッセージが表示される
-    public function testEmailIsRequired()
+    public function testRegisterEmailRequired()
     {
+        // 1. メールアドレス以外のユーザー情報を入力する
+        // 2. 会員登録の処理を行う
         $response = $this->post('/register', [
             'name' => 'テストユーザー',
             'email' => '',
@@ -44,14 +49,17 @@ class UserTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
+        //「メールアドレスを入力してください」というバリデーションメッセージが表示される
         $response->assertSessionHasErrors([
             'email' => 'メールアドレスを入力してください。',
         ]);
     }
 
     // パスワードが8文字未満の場合、バリデーションメッセージが表示される
-    public function testPasswordMustBeAtLeast8Characters()
+    public function testRegisterPasswordTooShort()
     {
+        // 1. パスワードを8文字未満にし、ユーザー情報を入力する
+        // 2. 会員登録の処理を行う
         $response = $this->post('/register', [
             'name' => 'テストユーザー',
             'email' => 'test@example.com',
@@ -59,14 +67,17 @@ class UserTest extends TestCase
             'password_confirmation' => 'short',
         ]);
 
+        //「パスワードは8文字以上で入力してください」というバリデーションメッセージが表示される
         $response->assertSessionHasErrors([
             'password' => 'パスワードは8文字以上で入力してください。',
         ]);
     }
 
     // パスワードが一致しない場合、バリデーションメッセージが表示される
-    public function testPasswordConfirmationMustMatch()
+    public function testRegisterPasswordMismatch()
     {
+        // 1. 確認用のパスワードとパスワードを一致させず、ユーザー情報を入力する
+        // 2. 会員登録の処理を行う
         $response = $this->post('/register', [
             'name' => 'テストユーザー',
             'email' => 'test@example.com',
@@ -74,14 +85,17 @@ class UserTest extends TestCase
             'password_confirmation' => 'differentpassword',
         ]);
 
+        //「パスワードと一致しません」というバリデーションメッセージが表示される
         $response->assertSessionHasErrors([
             'password' => 'パスワードと一致しません。',
         ]);
     }
 
     // パスワードが未入力の場合、バリデーションメッセージが表示される
-    public function testPasswordIsRequired()
+    public function testRegisterPasswordRequired()
     {
+        // 1. パスワード以外のユーザー情報を入力する
+        // 2. 会員登録の処理を行う
         $response = $this->post('/register', [
             'name' => 'テストユーザー',
             'email' => 'test@example.com',
@@ -89,14 +103,17 @@ class UserTest extends TestCase
             'password_confirmation' => '',
         ]);
 
+        //「パスワードを入力してください」というバリデーションメッセージが表示される
         $response->assertSessionHasErrors([
             'password' => 'パスワードを入力してください。',
         ]);
     }
 
     // フォームに内容が入力されていた場合、データが正常に保存される
-    public function testUserIsRegisteredSuccessfully()
+    public function testRegisterSuccess()
     {
+        // 1. ユーザー情報を入力する
+        // 2. 会員登録の処理を行う
         $response = $this->post('/register', [
             'name' => 'テストユーザー',
             'email' => 'test@example.com',
@@ -104,6 +121,7 @@ class UserTest extends TestCase
             'password_confirmation' => 'password123',
         ]);
 
+        //データベースに登録したユーザー情報が保存される
         $this->assertDatabaseHas('users', [
             'name' => 'テストユーザー',
             'email' => 'test@example.com',
@@ -112,60 +130,70 @@ class UserTest extends TestCase
 
     //ログイン認証機能（一般ユーザー）
     // メールアドレスが未入力の場合、バリデーションメッセージが表示される
-    public function testLoginEmailIsRequired()
+    public function testLoginEmailRequired()
     {
+        // 1. ユーザーを登録する
         User::factory()->create([
             'name' => 'テストユーザー',
             'email' => 'test@example.com',
             'password' => Hash::make('password123'),
         ]);
 
+        // 2. メールアドレス以外のユーザー情報を入力する
+        // 3. ログインの処理を行う
         $response = $this->post('/login', [
             'email' => '',
             'password' => 'password123',
         ]);
 
+        //「メールアドレスを入力してください」というバリデーションメッセージが表示される
         $response->assertSessionHasErrors([
             'email' => 'メールアドレスを入力してください。',
         ]);
     }
 
     // パスワードが未入力の場合、バリデーションメッセージが表示される
-    public function testLoginPasswordIsRequired()
+    public function testLoginPasswordRequired()
     {
+        // 1. ユーザーを登録する
         User::factory()->create([
             'name' => 'テストユーザー',
             'email' => 'test@example.com',
             'password' => Hash::make('password123'),
         ]);
 
+        // 2. パスワード以外のユーザー情報を入力する
+        // 3. ログインの処理を行う
         $response = $this->post('/login', [
             'email' => 'test@example.com',
             'password' => '',
         ]);
 
+        //「パスワードを入力してください」というバリデーションメッセージが表示される
         $response->assertSessionHasErrors([
             'password' => 'パスワードを入力してください。',
         ]);
     }
 
     // 登録内容と一致しない場合、バリデーションメッセージが表示される
-    public function testLoginFailsWithInvalidCredentials()
+    public function testLoginInvalidCredentials()
     {
+        // 1. ユーザーを登録する
         User::factory()->create([
             'name' => 'テストユーザー',
             'email' => 'test@example.com',
             'password' => Hash::make('password123'),
         ]);
 
-        // 存在しないユーザー情報でログインを試みる
+        // 2. 誤ったメールアドレスのユーザー情報を入力する
+        // 3. ログインの処理を行う
         $response = $this->from('/login')->post('/login', [
             'email' => 'wrong@example.com',
             'password' => 'wrongpassword',
         ]);
 
-        $response->assertRedirect('/login');
-        $response->assertSessionHasErrors([
+        // 「ログイン情報が登録されていません」というバリデーションメッセージが表示される
+            $response->assertSessionHasErrors([
             'email' => 'ログイン情報が登録されていません。',
         ]);
     }

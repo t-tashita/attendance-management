@@ -15,58 +15,71 @@ class AdminTest extends TestCase
 {
     use RefreshDatabase;
 
+    //ログイン認証機能（管理者）
     // メールアドレスが未入力の場合、バリデーションメッセージが表示される
-    public function test_validation_error_displayed_when_email_is_empty()
+    public function testLoginEmailRequired()
     {
+        // 1. ユーザーを登録する
         Admin::create([
             'name' => '管理者',
             'email' => 'admin@example.com',
             'password' => Hash::make('password123'),
         ]);
 
+        // 2. メールアドレス以外のユーザー情報を入力する
+        // 3. ログインの処理を行う
         $response = $this->post(route('admin.login.submit'), [
             'email' => '',
             'password' => 'password123',
         ]);
 
+        //「メールアドレスを入力してください」というバリデーションメッセージが表示される
         $response->assertSessionHasErrors([
             'email' => 'メールアドレスを入力してください。',
         ]);
     }
 
     // パスワードが未入力の場合、バリデーションメッセージが表示される
-    public function test_validation_error_displayed_when_password_is_empty()
+    public function testLoginPasswordRequired()
     {
+        //1. ユーザーを登録する
         Admin::create([
             'name' => '管理者',
             'email' => 'admin@example.com',
             'password' => Hash::make('password123'),
         ]);
 
+        // 2. パスワード以外のユーザー情報を入力する
+        // 3. ログインの処理を行う
         $response = $this->post(route('admin.login.submit'), [
             'email' => 'admin@example.com',
             'password' => '',
         ]);
 
+        //「パスワードを入力してください」というバリデーションメッセージが表示される
         $response->assertSessionHasErrors([
             'password' => 'パスワードを入力してください。',
         ]);
     }
 
     // 登録内容と一致しない場合、バリデーションメッセージが表示される
-    public function test_error_displayed_when_credentials_do_not_match()
+    public function testLoginInvalidCredentials()
     {
+        // 1. ユーザーを登録する
         Admin::create([
             'name' => '管理者',
             'email' => 'admin@example.com',
             'password' => Hash::make('password123'),
         ]);
 
+        // 2. 誤ったメールアドレスのユーザー情報を入力する
+        // 3. ログインの処理を行う
         $response = $this->post(route('admin.login.submit'), [
             'email' => 'admin@example.com',
             'password' => 'wrongpassword',
         ]);
 
+        //「ログイン情報が登録されていません」というバリデーションメッセージが表示される
         $response->assertSessionHasErrors([
             'email' => 'ログイン情報が登録されていません。',
         ]);
