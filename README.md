@@ -25,6 +25,7 @@ https://mailtrap.io/
 MAIL_FROM_ADDRESSは任意のメールアドレスを入力してください。  
 
 # ER図  
+![Image](https://github.com/user-attachments/assets/39706335-190d-45ea-8c4f-1076c5f1a16f)  
 
 # テストアカウント
 ## 一般ユーザ
