@@ -9,7 +9,7 @@ class ApplicationRequest extends FormRequest
     {
         return [
             'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i', 'after_or_equal:start_time'],
+            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
             'breaks' => ['nullable', 'array'],
             'note' => ['required', 'string'],
         ];
@@ -20,7 +20,7 @@ class ApplicationRequest extends FormRequest
         return [
             'start_time.required' => '出勤時間は必須です。',
             'end_time.required' => '退勤時間は必須です。',
-            'end_time.after_or_equal' => '出勤時間もしくは退勤時間が不適切な値です。',
+            'end_time.after' => '出勤時間もしくは退勤時間が不適切な値です。',
             'note.required' => '備考を記入してください。',
         ];
     }
@@ -31,11 +31,6 @@ class ApplicationRequest extends FormRequest
             $breaks = $this->input('breaks', []);
             $startTime = $this->input('start_time');
             $endTime = $this->input('end_time');
-
-            // 出勤が退勤より後の場合
-            if ($startTime && $endTime && $startTime > $endTime) {
-                $validator->errors()->add('end_time', '出勤時間もしくは退勤時間が不適切な値です。');
-            }
 
             // 休憩バリデーション
             if ($breaks && $endTime) {

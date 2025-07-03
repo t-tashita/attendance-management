@@ -68,7 +68,9 @@ class ApplicationController extends Controller
         $attendanceModel = Attendance::with('user', 'breaks')->findOrFail($id);
 
         // 該当勤怠に紐づく申請があれば取得
-        $application = Application::where('attendance_id', $id)->first();
+        $application = Application::where('attendance_id', $id)
+        ->orderBy('created_at', 'desc')
+        ->first();
 
         if ($application) {
             // Applicationのdataを使用して構築

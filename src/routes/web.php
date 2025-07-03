@@ -5,6 +5,11 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ApplicationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
+//localhost接続時ログイン画面に遷移
+Route::get('/', function () {
+    return redirect('/login');
+});
+
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // 勤怠登録画面（一般ユーザー）

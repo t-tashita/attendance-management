@@ -74,7 +74,6 @@ class UsersTableSeeder extends Seeder
         DB::table('admins')->insert([
             'name' => '管理者',
             'email' => 'admin@coachtech.com',
-            'email_verified_at' => now(),
             'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
             'created_at' => now(),

@@ -13,7 +13,7 @@ class AttendanceWithBreakSeeder extends Seeder
 {
     public function run(): void
     {
-        $period = CarbonPeriod::create('2025-04-16', '2025-05-31');
+        $period = CarbonPeriod::create('2025-05-16', '2025-06-30');
         $users = User::all();
 
         DB::transaction(function () use ($period, $users) {

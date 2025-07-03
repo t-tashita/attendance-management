@@ -13,7 +13,7 @@ class CreateApplicationsTable extends Migration
             $table->foreignId('attendance_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('reason');
-            $table->json('data')->nullable();
+            $table->json('data');
             $table->timestamp('applied_at')->useCurrent();
             $table->boolean('is_approved')->nullable(); // null=未対応, true=承認, false=否認
             $table->timestamps();

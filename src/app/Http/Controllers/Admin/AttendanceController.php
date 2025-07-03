@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ApplicationRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 use App\Models\User;
 use App\Models\Attendance;
 use Carbon\Carbon;
@@ -107,7 +108,6 @@ class AttendanceController extends Controller
         $month = $request->query('month', Carbon::now()->format('Y-m'));
         $userId = $request->query('user_id');
 
-        // ユーザー名を取得（存在しなければIDをファイル名に入れるなどの処理を入れてもOK）
         $user = User::find($userId);
         $userName = $user ? str_replace([' ', '/'], '', $user->name) : 'user_' . $userId;
 
@@ -118,17 +118,20 @@ class AttendanceController extends Controller
             ->orderBy('date')
             ->get();
 
-        // ファイル名にユーザー名と年月を入れる
         $fileName = "{$userName}_{$month}.csv";
 
         $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename={$fileName}",
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
         ];
 
         $callback = function () use ($attendances) {
             $handle = fopen('php://output', 'w');
 
+            // UTF-8 BOM を追加
+            echo "\xEF\xBB\xBF";
+
+            // ヘッダー行（Windowsでは \r\n のほうが改行されやすい）
             fputcsv($handle, ['日付', '出勤', '退勤', '休憩', '合計']);
 
             foreach ($attendances as $attendance) {
@@ -146,4 +149,5 @@ class AttendanceController extends Controller
 
         return new StreamedResponse($callback, 200, $headers);
     }
+
 }
