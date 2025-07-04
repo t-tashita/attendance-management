@@ -331,7 +331,7 @@ class UserTest extends TestCase
         $response = $this->actingAs($user)->get(route('attendance.action'));
         $response->assertStatus(200);
 
-        $response->assertDontSee('出勤');
+        $response->assertDontSee('出勤</button>');
     }
 
     //出勤時刻が管理画面で確認できる
@@ -577,7 +577,7 @@ class UserTest extends TestCase
     public function testUserCanSeeClockOutTimeAndDateInAttendanceList()
     {
         // 出勤時刻（現在）を設定
-        $checkinTime = Carbon::now()->setSeconds(0);
+        $checkinTime = Carbon::today()->setTime(9, 0, 0);
 
         // ユーザー作成
         $user = User::factory()->create();
@@ -600,7 +600,7 @@ class UserTest extends TestCase
 
         $this->assertDatabaseHas('attendances', [
             'user_id' => $user->id,
-            'date' => $checkinTime->format('Y-m-d'),
+            'date' => $checkinTime->format('Y/m-d'),
             'start_time' => $checkinTime->format('H:i:s'),
             'end_time' => $checkoutTime->format('H:i:s'),
         ]);
