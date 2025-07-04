@@ -46,12 +46,19 @@
   border-radius: 4px;
   box-sizing: border-box;
   font-family: inherit;
+  position: relative;
   resize: none;
 }
 
 .application_approval__input:disabled,
 .application_approval__textarea:disabled {
   color: #000;
+}
+
+.application_approval__input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  cursor: pointer;
 }
 
 .application_approval__input--error {

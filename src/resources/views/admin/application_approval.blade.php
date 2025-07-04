@@ -39,7 +39,7 @@
         <tr class="application_approval__row">
           <th class="application_approval__header">出勤・退勤</th>
           <td class="application_approval__data">
-            <input type="time" name="start_time" value="{{ old('start_time', $attendance['start_time']->format('H:i')) }}" 
+            <input type="time" name="start_time" value="{{ old('start_time', $attendance['start_time']->format('H:i')) }}"
               class="application_approval__input @error('start_time') application_approval__input--error @enderror" {{ $application->is_approved ? 'disabled' : '' }}>
             ～
             <input type="time" name="end_time" value="{{ old('end_time', $attendance['end_time'] ? $attendance['end_time']->format('H:i') : '') }}"
@@ -53,7 +53,7 @@
         <tr class="application_approval__row">
           <th class="application_approval__header">休憩{{ $index + 1 }}</th>
           <td class="application_approval__data">
-            <input type="time" name="breaks[{{ $index }}][start]" value="{{ old("breaks.$index.start", $break->start_time->format('H:i')) }}" 
+            <input type="time" name="breaks[{{ $index }}][start]" value="{{ old("breaks.$index.start", $break->start_time->format('H:i')) }}"
               class="application_approval__input @error("breaks.$index.start") application_approval__input--error @enderror" {{ $application->is_approved ? 'disabled' : '' }}>
             ～
             <input type="time" name="breaks[{{ $index }}][end]" value="{{ old("breaks.$index.end", $break->end_time ? $break->end_time->format('H:i') : '') }}"

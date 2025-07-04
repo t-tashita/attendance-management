@@ -54,7 +54,7 @@ class ApplicationController extends Controller
     }
 
     // 修正申請承認画面（管理者）
-    public function update(Request $request, $id)
+    public function update(ApplicationRequest $request, $id)
     {
         $application = Application::with('user')->findOrFail($id);
         $attendance = Attendance::findOrFail($application->attendance_id);
