@@ -32,7 +32,6 @@ class ApplicationController extends Controller
     public function approve($id)
     {
         $application = Application::with('user')->findOrFail($id);
-
         // JSONを連想配列としてデコード
         $data = json_decode($application->data, true);
 

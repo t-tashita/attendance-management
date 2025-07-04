@@ -84,8 +84,7 @@
             <textarea name="note" rows="3"
               class="attendance-show__textarea @error('note') attendance-show__input--error @enderror"
               {{ $isPending ? 'disabled' : '' }}
-              style="resize: none;">{{ old('note', $attendance->note) }}
-            </textarea>
+              style="resize: none;">{{ old('note', $attendance->note) }}</textarea>
             @error('note') <p class="attendance-show__error">{{ $message }}</p> @enderror
           </td>
         </tr>
