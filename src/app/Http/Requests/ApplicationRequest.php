@@ -33,13 +33,33 @@ class ApplicationRequest extends FormRequest
             $endTime = $this->input('end_time');
 
             // 休憩バリデーション
-            if ($breaks && $endTime) {
+            if ($breaks && $startTime && $endTime) {
                 foreach ($breaks as $index => $break) {
-                    if (!empty($break['start']) && $break['start'] > $endTime) {
-                        $validator->errors()->add("breaks.$index.start", '休憩時間が勤務時間外です。');
+                    $start = $break['start'] ?? null;
+                    $end = $break['end'] ?? null;
+
+                    // どちらか一方のみ入力された場合はエラー
+                    if (!empty($start) xor !empty($end)) {
+                        $validator->errors()->add("breaks.$index.start", '開始時間と終了時間の両方を入力してください。');
+                        continue;
                     }
-                    elseif (!empty($break['end']) && $break['end'] > $endTime) {
-                        $validator->errors()->add("breaks.$index.end", '休憩時間が勤務時間外です。');
+
+                    if (!empty($break['start'])) {
+                        if ($break['start'] < $startTime) {
+                            $validator->errors()->add("breaks.$index.start", '休憩時間が勤務時間外です。');
+                        }
+                        if ($break['start'] > $endTime) {
+                            $validator->errors()->add("breaks.$index.start", '休憩時間が勤務時間外です。');
+                        }
+                    }
+
+                    if (!empty($break['end'])) {
+                        if ($break['end'] < $startTime) {
+                            $validator->errors()->add("breaks.$index.end", '休憩時間が勤務時間外です。');
+                        }
+                        if ($break['end'] > $endTime) {
+                            $validator->errors()->add("breaks.$index.end", '休憩時間が勤務時間外です。');
+                        }
                     }
                 }
             }

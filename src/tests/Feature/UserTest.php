@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Attendance;
+use App\Models\Application;
 use App\Models\User;
+use App\Models\Admin;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Auth\Notifications\VerifyEmail;
@@ -202,9 +204,9 @@ class UserTest extends TestCase
     // 現在の日時情報がUIと同じ形式で出力されている
     public function testCurrentDateTimeIsDisplayedCorrectly()
     {
-        $user = \App\Models\User::factory()->create();
+        $user = User::factory()->create();
 
-        $now = \Carbon\Carbon::now();
+        $now = Carbon::now();
         $date = $now->format('Y年n月j日');
         $time = $now->format('H:i');
 
@@ -361,6 +363,7 @@ class UserTest extends TestCase
     }
 
     // 休憩機能
+    //休憩ボタンが正しく機能する
     public function testBreakStartButtonFunctionsCorrectly()
     {
         $user = User::factory()->create();
@@ -570,6 +573,45 @@ class UserTest extends TestCase
         $this->assertEquals($expectedCheckoutTime, Carbon::parse($attendance->end_time)->format('H:i'));
     }
 
+    //退勤時刻が管理画面で確認できる
+    public function testUserCanSeeClockOutTimeAndDateInAttendanceList()
+    {
+        // 出勤時刻（現在）を設定
+        $checkinTime = Carbon::now()->setSeconds(0);
+
+        // ユーザー作成
+        $user = User::factory()->create();
+
+        // 出勤スタンプ
+        Carbon::setTestNow($checkinTime);
+        $this->actingAs($user)->post(route('attendance.stamp'), [
+            'action' => 'checkin',
+        ]);
+
+        // 5時間後に退勤スタンプ
+        $checkoutTime = $checkinTime->copy()->addHours(5);
+        Carbon::setTestNow($checkoutTime);
+        $this->post(route('attendance.stamp'), [
+            'action' => 'checkout',
+        ]);
+
+        // 勤怠一覧ページへアクセス
+        $response = $this->actingAs($user)->get(route('attendance.index'));
+
+        $this->assertDatabaseHas('attendances', [
+            'user_id' => $user->id,
+            'date' => $checkinTime->format('Y-m-d'),
+            'start_time' => $checkinTime->format('H:i:s'),
+            'end_time' => $checkoutTime->format('H:i:s'),
+        ]);
+
+        // 日付と退勤時間の確認（例：06/26、14:00）
+        $response->assertStatus(200);
+        $response->assertSee($checkinTime->format('m/d'));
+        $response->assertSee($checkoutTime->format('H:i'));
+    }
+
+
     //勤怠一覧情報取得機能（一般ユーザー）
     //自分が行った勤怠情報が全て表示されている
     public function testAllOwnAttendanceRecordsAreVisibleInList()
@@ -604,6 +646,24 @@ class UserTest extends TestCase
     }
 
     //勤怠一覧画面に遷移した際に現在の月が表示される
+    public function testAttendanceListShowsCurrentMonth()
+    {
+        // 現在の時刻をテスト実行日に固定（例：2025-06-26）
+        $now = Carbon::now();
+
+        // テストユーザー作成
+        $user = User::factory()->create();
+
+        // 勤怠一覧ページにアクセス
+        $response = $this->actingAs($user)->get(route('attendance.index'));
+
+        // 表示されている現在の年月が、システム時刻に基づくものか確認
+        $expectedMonth = $now->format('Y/m');
+        $response->assertStatus(200);
+        $response->assertSee($expectedMonth);
+    }
+
+    //「前月」を押下した時に表示月の前月の情報が表示される
     public function testPreviousMonthButtonWorksAndDisplaysPreviousMonthData()
     {
         $user = User::factory()->create();
@@ -977,6 +1037,187 @@ class UserTest extends TestCase
         $response->assertSessionHasErrors([
             'note' => '備考を記入してください。',
         ]);
+    }
+
+    //修正申請処理が実行される
+    public function test_user_can_submit_and_admin_can_see_application()
+    {
+        // 一般ユーザー＆勤怠作成
+        $user = User::factory()->create();
+        $attendance = Attendance::factory()->create([
+            'user_id' => $user->id,
+            'date' => now()->toDateString(),
+            'start_time' => now()->setTime(9, 0),
+            'end_time' => now()->setTime(18, 0),
+        ]);
+
+        // 一般ユーザーとして修正申請送信
+        $this->actingAs($user)
+            ->post(route('application.store', $attendance->id), [
+                'date' => now()->toDateString(),
+                'start_time' => '09:30',
+                'end_time' => '18:30',
+                'note' => '朝寝坊のため',
+                'breaks' => [
+                    ['start' => '12:00', 'end' => '13:00']
+                ]
+            ])
+            ->assertRedirect(route('application.list'));
+
+        // 管理者ユーザー作成
+        $admin = Admin::factory()->create();
+
+        // 管理者としてログイン（admin guard）
+        $this->actingAs($admin, 'admin')
+            ->get(route('admin.app.list'))
+            ->assertStatus(200)
+            ->assertSee('朝寝坊のため');
+
+        // 修正申請のID取得して承認画面確認
+        $application = Application::first();
+
+        $this->actingAs($admin, 'admin')
+            ->get(route('admin.app.approve', $application->id))
+            ->assertStatus(200)
+            ->assertSee('09:30')
+            ->assertSee('朝寝坊のため');
+    }
+
+    //「承認待ち」にログインユーザーが行った申請が全て表示されていること
+    public function test_user_can_see_all_pending_applications_in_list()
+    {
+        // 1. ユーザーと勤怠データ作成
+        $user = User::factory()->create();
+
+        // 複数の勤怠情報を作成
+        $attendances = Attendance::factory()->count(3)->create([
+            'user_id' => $user->id,
+            'date' => now()->toDateString(),
+            'start_time' => now()->setTime(9, 0),
+            'end_time' => now()->setTime(18, 0),
+        ]);
+
+        // 2. 各勤怠情報に対して修正申請を作成
+        $this->actingAs($user);
+
+        foreach ($attendances as $attendance) {
+            $this->post(route('application.store', $attendance->id), [
+                'date' => $attendance->date,
+                'start_time' => '09:30',
+                'end_time' => '18:30',
+                'note' => '修正申請: ' . $attendance->id,
+                'breaks' => [
+                    ['start' => '12:00', 'end' => '13:00']
+                ],
+            ])->assertRedirect(route('application.list'));
+        }
+
+        // 念のため、申請がDBに保存されていることを確認
+        $this->assertDatabaseCount('applications', 3);
+
+        // 3. 申請一覧画面にアクセスし、すべての申請が表示されているか確認
+        $response = $this->get(route('application.list'));
+
+        $response->assertStatus(200);
+
+        // 各申請のメモ（note）が表示されているか確認
+        foreach ($attendances as $attendance) {
+            $response->assertSee('修正申請: ' . $attendance->id);
+        }
+    }
+
+    //「承認済み」に管理者が承認した修正申請が全て表示されている
+    public function test_user_can_see_all_approved_applications()
+    {
+        // 一般ユーザー作成
+        $user = User::factory()->create();
+
+        // 勤怠情報2件作成
+        $attendances = Attendance::factory()->count(2)->create([
+            'user_id' => $user->id,
+            'date' => now()->toDateString(),
+            'start_time' => '09:00',
+            'end_time' => '18:00',
+        ]);
+
+        // 一般ユーザーとしてログインして、申請を2件作成
+        $this->actingAs($user);
+        foreach ($attendances as $attendance) {
+            $this->post(route('application.store', $attendance->id), [
+                'date' => $attendance->date,
+                'start_time' => '09:30',
+                'end_time' => '18:30',
+                'note' => '承認対象: ' . $attendance->id,
+                'breaks' => [
+                    ['start' => '12:00', 'end' => '13:00'],
+                ],
+            ])->assertRedirect(route('application.list'));
+        }
+
+        // 管理者として申請を承認（admin guard）
+        $admin = Admin::factory()->create();
+        $this->actingAs($admin, 'admin');
+
+        $applications = \App\Models\Application::where('user_id', $user->id)->get();
+        foreach ($applications as $application) {
+            $this->put(route('admin.app.update', $application->id), [
+                'start_time' => '09:30',
+                'end_time' => '18:30',
+                'note' => '承認済み',
+                'breaks' => [
+                    ['start' => '12:00', 'end' => '13:00'],
+                ],
+            ])->assertRedirect(route('admin.app.list'));
+        }
+
+        // 再び一般ユーザーとしてログイン
+        $this->actingAs($user);
+
+        // 承認済み一覧ページにアクセス
+        $response = $this->get(route('application.list', ['status' => 'approved']));
+
+        $response->assertStatus(200);
+
+        // noteに含めた文字列で確認
+        foreach ($attendances as $attendance) {
+            $response->assertSee('承認対象: ' . $attendance->id);
+        }
+    }
+
+    //各申請の「詳細」を押下すると申請詳細画面に遷移する
+    public function test_clicking_detail_button_redirects_to_application_detail_page()
+    {
+        // 1. 一般ユーザー＆勤怠情報作成
+        $user = User::factory()->create();
+        $attendance = Attendance::factory()->create([
+            'user_id' => $user->id,
+            'date' => now()->toDateString(),
+            'start_time' => '09:00',
+            'end_time' => '18:00',
+        ]);
+
+        // 2. 修正申請を作成
+        $this->actingAs($user)
+            ->post(route('application.store', $attendance->id), [
+                'date' => $attendance->date,
+                'start_time' => '09:30',
+                'end_time' => '18:30',
+                'note' => '申請詳細確認テスト',
+                'breaks' => [
+                    ['start' => '12:00', 'end' => '13:00'],
+                ],
+            ])->assertRedirect(route('application.list'));
+
+        // 3. 「申請一覧」画面にアクセスし、「詳細」ボタン（リンク）に相当するURLへ遷移
+        $response = $this->get(route('attendance.show', $attendance->id));
+
+        // 4. 遷移成功を確認
+        $response->assertStatus(200);
+
+        // 5. 詳細画面に修正申請の内容が表示されていることを確認
+        $response->assertSee('申請詳細確認テスト');
+        $response->assertSee('09:30');
+        $response->assertSee('18:30');
     }
 
     //メール認証機能

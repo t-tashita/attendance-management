@@ -12,7 +12,7 @@ class CreateAttendancesTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->date('date');
-            $table->time('start_time');
+            $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
             $table->text('note')->nullable();
             $table->boolean('is_pending')->default(false); // 承認依頼が出されているか

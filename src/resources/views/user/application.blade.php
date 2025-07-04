@@ -52,9 +52,9 @@
         <tr class="application__row">
           <td class="application__cell">{{ $application->status_label }}</td>
           <td class="application__cell">{{ $application->user->name }}</td>
-          <td class="application__cell">{{ $application->target_date->format('Y年n月j日') }}</td>
+          <td class="application__cell">{{ $application->target_date->format('Y/m/d') }}</td>
           <td class="application__cell">{{ $application->reason }}</td>
-          <td class="application__cell">{{ $application->created_at->format('Y/m/d H:i') }}</td>
+          <td class="application__cell">{{ $application->created_at->format('Y/m/d') }}</td>
           <td class="application__cell">
             <a href="{{ route('attendance.show', $application->attendance->id) }}" class="application__detail-link">詳細</a>
           </td>

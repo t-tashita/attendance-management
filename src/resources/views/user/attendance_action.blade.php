@@ -6,7 +6,7 @@
 
 @section('links')
   <ul class="header__links">
-    @if ($status !== '退勤済み')
+    @if ($status !== '退勤済')
       <li class="header__link"><a href="{{ route('attendance.action') }}">勤怠</a></li>
       <li class="header__link"><a href="{{ route('attendance.index') }}">勤怠一覧</a></li>
       <li class="header__link"><a href="{{ route('application.list') }}">申請</a></li>

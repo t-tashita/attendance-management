@@ -207,7 +207,7 @@ class AdminTest extends TestCase
         $responsePrev->assertDontSee('18:00');
     }
 
-    //
+    //「翌日」を押下した時に次の日の勤怠情報が表示される
     public function test_admin_can_view_next_day_attendance_when_clicking_next_button()
     {
         // 管理者ユーザーを作成＆ログイン
