@@ -56,3 +56,6 @@ docker-compose exec php bash
 php artisan migrate:fresh --env=testing  
 ./vendor/bin/phpunit  
 ```
+# 補足
+テストデータとして、全6アカウントの勤怠データが登録されています。  
+5/15~6/30までの平日9:00~18:00(休憩 12:00~13:00)  
