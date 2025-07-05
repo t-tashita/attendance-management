@@ -72,7 +72,7 @@ class ApplicationController extends Controller
         ->orderBy('created_at', 'desc')
         ->first();
 
-        if ($application) {
+        if ($application && $application->created_at->greaterThan($attendanceModel->updated_at)){
             // Applicationのdataを使用して構築
             $data = json_decode($application->data, true);
 
