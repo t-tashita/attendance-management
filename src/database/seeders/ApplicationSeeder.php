@@ -47,10 +47,10 @@ class ApplicationSeeder extends Seeder
                                 ],
                             ],
                         ]),
-                        'applied_at' => now()->addDays($i),
+                        'applied_at' => now()->addDays($i+1),
                         'is_approved' => $i === 0 ? null : true,
-                        'created_at' => now()->addDays($i),
-                        'updated_at' => now()->addDays($i),
+                        'created_at' => now()->addDays($i+1),
+                        'updated_at' => now()->addDays($i+1),
                     ]);
 
                     $i++;
