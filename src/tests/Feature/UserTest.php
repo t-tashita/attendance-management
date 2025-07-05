@@ -1194,6 +1194,8 @@ class UserTest extends TestCase
             'date' => now()->toDateString(),
             'start_time' => '09:00',
             'end_time' => '18:00',
+            'created_at' => now()->subDays(),
+            'updated_at' => now()->subDays(),
         ]);
 
         // 2. 修正申請を作成

@@ -47,8 +47,10 @@ class ApplicationSeeder extends Seeder
                                 ],
                             ],
                         ]),
-                        'applied_at' => now()->subDays($i),
+                        'applied_at' => now()->addDays($i),
                         'is_approved' => $i === 0 ? null : true,
+                        'created_at' => now()->addDays($i),
+                        'updated_at' => now()->addDays($i),
                     ]);
 
                     $i++;
