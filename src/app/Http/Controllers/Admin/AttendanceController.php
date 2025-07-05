@@ -63,10 +63,12 @@ class AttendanceController extends Controller
         // 既存休憩削除・再登録
         $attendance->breaks()->delete();
         foreach ($validated['breaks'] as $break) {
-            $attendance->breaks()->create([
-                'start_time' => $break['start'],
-                'end_time' => $break['end'],
-            ]);
+            if (!is_null($break['start']) && !is_null($break['end'])) {
+                $attendance->breaks()->create([
+                    'start_time' => $break['start'],
+                    'end_time' => $break['end'],
+                ]);
+            }
         }
 
         return redirect()->route('admin.list');
